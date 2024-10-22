@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
 import '../../../../core/constants/app_strings.dart';
-
 import '../providers/auth_providers.dart';
-import '../widgets/auth_bottom_text.dart';
-import '../widgets/auth_form.dart';
 import '../widgets/auth_page_layout.dart';
+import '../widgets/auth_form.dart';
+import '../widgets/auth_bottom_text.dart';
 
-class LoginPage extends ConsumerStatefulWidget {
-  const LoginPage({super.key});
+class SignUpPage extends ConsumerStatefulWidget {
+  const SignUpPage({super.key});
 
   @override
-  ConsumerState<LoginPage> createState() => _LoginPageState();
+  ConsumerState<SignUpPage> createState() => _SignUpPageState();
 }
 
-class _LoginPageState extends ConsumerState<LoginPage> {
+class _SignUpPageState extends ConsumerState<SignUpPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -29,10 +27,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     super.dispose();
   }
 
-  Future<void> _login() async {
+  Future<void> _signUp() async {
     if (_formKey.currentState!.validate()) {
       try {
-        await ref.read(authProvider.notifier).signIn(
+        await ref.read(authProvider.notifier).signUp(
               _emailController.text,
               _passwordController.text,
             );
@@ -48,21 +46,21 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return AuthPageLayout(
-      title: AppStrings.welcome,
-      subtitle: AppStrings.signInText,
+      title: AppStrings.createAccount,
+      subtitle: AppStrings.signUpText,
       errorMessage: _errorMessage,
       bottomSection: AuthBottomText(
-        message: AppStrings.notAUser,
-        buttonText: AppStrings.signUp,
-        onPressed: () => context.go('/signup'),
+        message: AppStrings.alreadyHaveAccount,
+        buttonText: AppStrings.signIn,
+        onPressed: () => context.go('/'),
       ),
       children: [
         AuthForm(
           formKey: _formKey,
           emailController: _emailController,
           passwordController: _passwordController,
-          onSubmit: _login,
-          submitButtonText: AppStrings.signIn,
+          onSubmit: _signUp,
+          submitButtonText: AppStrings.signUp,
         ),
       ],
     );
