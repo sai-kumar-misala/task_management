@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "328861435208",
+    "project_id": "task-management-df2a6",
+    "storage_bucket": "task-management-df2a6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:328861435208:android:f85a78884987694c459f7d",
+        "android_client_info": {
+          "package_name": "com.example.task_management"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPvgCHvX5qPlARThgqVEpPn5BFaI6rI70"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
