@@ -26,8 +26,26 @@ class AppStrings {
   static const logout = 'Logout';
   static const dashboard = 'Dashboard';
   static const welcomeToDashboard = 'Welcome to the Dashboard!';
+  static const noTasksAvailable = 'No tasks available';
+  static const createTask = 'Create Task';
 
   // Page Not found page
   static const pageNotFound = '404 - Page Not Found';
   static const goToHome = 'Go to Home';
+
+  // Create Task page
+  static const title = 'Title';
+  static const description = 'Description';
+  static const dueDate = 'Due Date:';
+  static const selectDueDate = 'Select Due Date';
+  static const taskCreated = 'Task created successfully';
+  static const taskCreationError = 'Error creating task:';
+  static const taskMustBeLoggedIn = 'You must be logged in to create tasks';
+
+// Create Task page
+  static const taskDetails = 'Task Details';
+  static const errorLoadingTask = 'Error loading task:';
+
+  // General
+  static const userNotAuthenticated = 'User not authenticated';
 }

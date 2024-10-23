@@ -16,11 +16,10 @@ class LoadingButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
+    return FilledButton(
       onPressed: isLoading ? null : onPressed,
-      style: ElevatedButton.styleFrom(
-        padding: padding,
-        minimumSize: const Size(double.infinity, 48),
+      style: FilledButton.styleFrom(
+        padding: const EdgeInsets.all(16),
       ),
       child: isLoading
           ? const SizedBox(
