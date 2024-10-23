@@ -5,7 +5,7 @@ class LogoutUseCase {
 
   LogoutUseCase({required this.repository});
 
-  Future<void> call(String email, String password) async {
+  Future<void> call() async {
     return await repository.signOut();
   }
 }

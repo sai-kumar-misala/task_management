@@ -5,6 +5,7 @@ import '../../../../core/constants/app_paddings.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/utils/validation_utils.dart';
 import '../../../../shared/widgets/custom_text_field.dart';
+import '../../../../shared/widgets/loading_button.dart';
 import '../../../../shared/widgets/spacings.dart';
 
 class AuthForm extends ConsumerStatefulWidget {
@@ -14,6 +15,7 @@ class AuthForm extends ConsumerStatefulWidget {
   final VoidCallback onSubmit;
   final String submitButtonText;
   final bool showPasswordStrength;
+  final bool isLoading;
 
   const AuthForm({
     super.key,
@@ -22,6 +24,7 @@ class AuthForm extends ConsumerStatefulWidget {
     required this.passwordController,
     required this.onSubmit,
     required this.submitButtonText,
+    required this.isLoading,
     this.showPasswordStrength = false,
   });
 
@@ -60,10 +63,11 @@ class _AuthFormState extends ConsumerState<AuthForm> {
             validator: ValidationUtils.validatePassword,
           ),
           const Spacing.vertical(24),
-          ElevatedButton(
+          LoadingButton(
+            text: widget.submitButtonText,
             onPressed: widget.onSubmit,
-            style: ElevatedButton.styleFrom(padding: AppPaddings.gV16),
-            child: Text(widget.submitButtonText),
+            isLoading: widget.isLoading,
+            padding: AppPaddings.gV16,
           ),
         ],
       ),

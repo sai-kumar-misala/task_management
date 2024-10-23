@@ -21,6 +21,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   String? _errorMessage;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -31,6 +32,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
       try {
         await ref.read(authNotifierProvider.notifier).signIn(
               _emailController.text,
@@ -41,6 +46,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         setState(() {
           _errorMessage = e.toString();
         });
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
       }
     }
   }
@@ -63,6 +74,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           passwordController: _passwordController,
           onSubmit: _login,
           submitButtonText: AppStrings.signIn,
+          isLoading: _isLoading,
         ),
       ],
     );

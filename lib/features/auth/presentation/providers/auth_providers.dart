@@ -1,10 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
 import '../../../session/providers/session_provider.dart';
 import '../../data/data_sources/auth_remote_data_source.dart';
 import '../../data/model/user_model.dart';
 import '../../data/repositories/auth_repository_impl.dart';
 import '../../domain/use_cases/login_use_case.dart';
+import '../../domain/use_cases/logout_use_case.dart';
+import '../../domain/use_cases/signup_use_case.dart';
 
 final authStateProvider = StreamProvider<User?>((ref) {
   return FirebaseAuth.instance.authStateChanges();
@@ -61,14 +64,14 @@ class AuthNotifier extends StateNotifier<UserModel?> {
 
   Future<void> signUp(String email, String password) async {
     try {
-      await _ref.read(authRepositoryProvider).signUp(email, password);
+      await _ref.read(signUpUseCaseProvider).call(email, password);
     } catch (error) {
       throw Exception('Sign up failed: ${error.toString()}');
     }
   }
 
   Future<void> signOut() async {
-    await _ref.read(authRepositoryProvider).signOut();
+    await _ref.read(logOutUseCaseProvider).call();
   }
 }
 
@@ -79,6 +82,14 @@ final authNotifierProvider =
 
 final loginUseCaseProvider = Provider((ref) {
   return LoginUseCase(repository: ref.read(authRepositoryProvider));
+});
+
+final signUpUseCaseProvider = Provider((ref) {
+  return SignUpUseCase(repository: ref.read(authRepositoryProvider));
+});
+
+final logOutUseCaseProvider = Provider((ref) {
+  return LogoutUseCase(repository: ref.read(authRepositoryProvider));
 });
 
 final authRepositoryProvider = Provider((ref) {
