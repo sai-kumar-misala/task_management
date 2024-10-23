@@ -10,6 +10,28 @@ class TasksRemoteDataSource {
 
   String? get currentUserId => _auth.currentUser?.uid;
 
+  Future<List<TaskModel>> getPaginatedTasks(
+      int limit, String? lastDocumentId) async {
+    var query = _firestore
+        .collection(tasksCollection)
+        .where('userId', isEqualTo: currentUserId)
+        .orderBy('createdAt', descending: true)
+        .limit(limit);
+
+    if (lastDocumentId != null) {
+      final lastDocSnapshot = await _firestore
+          .collection(tasksCollection)
+          .doc(lastDocumentId)
+          .get();
+      query = query.startAfterDocument(lastDocSnapshot);
+    }
+
+    final querySnapshot = await query.get();
+    return querySnapshot.docs
+        .map((doc) => TaskModel.fromMap(doc.data()))
+        .toList();
+  }
+
   Future<void> createTask(TaskModel task) async {
     if (currentUserId == null) {
       throw Exception(AppStrings.userNotAuthenticated);

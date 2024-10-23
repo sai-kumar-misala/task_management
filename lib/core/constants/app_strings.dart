@@ -29,6 +29,9 @@ class AppStrings {
   static const noTasksAvailable = 'No tasks available';
   static const createTask = 'Create Task';
   static const create = 'Create';
+  static const logOutError = 'Error logging out:';
+  static const loadMore = 'Load More';
+  static const retry = 'Retry';
 
   // Page Not found page
   static const pageNotFound = '404 - Page Not Found';

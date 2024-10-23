@@ -9,14 +9,44 @@ import '../../../../shared/widgets/custom_icon_button.dart';
 import '../../../../shared/widgets/custom_snackbar.dart';
 import '../../../../shared/widgets/spacings.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
+import '../../domain/entities/pagination_state.dart';
 import '../providers/task_providers.dart';
 import '../widgets/task_card.dart';
 
-class DashboardPage extends ConsumerWidget {
+class DashboardPage extends ConsumerStatefulWidget {
   const DashboardPage({super.key});
 
-  Future<void> _showLogoutConfirmation(
-      BuildContext context, WidgetRef ref) async {
+  @override
+  ConsumerState<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends ConsumerState<DashboardPage> {
+  final _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(paginatedTasksProvider.notifier).loadInitial();
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent * 0.8) {
+      ref.read(paginatedTasksProvider.notifier).loadMore();
+    }
+  }
+
+  Future<void> _showLogoutConfirmation() async {
     final willLogout = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -35,21 +65,21 @@ class DashboardPage extends ConsumerWidget {
       ),
     );
 
-    if (willLogout == true && context.mounted) {
+    if (willLogout == true && mounted) {
       try {
         await ref.read(authNotifierProvider.notifier).signOut();
-        if (context.mounted) {
+        if (mounted) {
           context.goNamed('login');
         }
       } catch (e) {
-        if (context.mounted) {
-          CustomSnackBar.show(context, '${AppStrings.taskCreationError} $e');
+        if (mounted) {
+          CustomSnackBar.show(context, '${AppStrings.logOutError} $e');
         }
       }
     }
   }
 
-  Widget _buildEmptyState(BuildContext context) {
+  Widget _buildEmptyState() {
     return Center(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 400),
@@ -72,7 +102,7 @@ class DashboardPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildErrorState(dynamic error, WidgetRef ref) {
+  Widget _buildErrorState(String error) {
     return Center(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 400),
@@ -82,14 +112,15 @@ class DashboardPage extends ConsumerWidget {
             const Icon(Icons.error_outline, size: 64, color: Colors.red),
             const Spacing.vertical(16),
             Text(
-              '${AppStrings.taskCreationError} $error',
+              '${AppStrings.errorLoadingTask} $error',
               textAlign: TextAlign.center,
             ),
             const Spacing.vertical(8),
             ElevatedButton.icon(
-              onPressed: () => ref.refresh(getTasksProvider),
+              onPressed: () =>
+                  ref.read(paginatedTasksProvider.notifier).refresh(),
               icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
+              label: const Text(AppStrings.retry),
             ),
           ],
         ),
@@ -97,28 +128,72 @@ class DashboardPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildTaskGrid(List<dynamic> tasks, BuildContext context) {
+  Widget _buildLoadMoreCard() {
+    return Card(
+      child: InkWell(
+        onTap: () => ref.read(paginatedTasksProvider.notifier).loadMore(),
+        child: Container(
+          padding: AppPaddings.g16,
+          alignment: Alignment.center,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Consumer(
+                builder: (context, ref, _) {
+                  final state = ref.watch(paginatedTasksProvider);
+                  return state.isLoading
+                      ? const CircularProgressIndicator()
+                      : const Icon(Icons.add, size: 32);
+                },
+              ),
+              const Spacing.vertical(8),
+              const Text(AppStrings.loadMore),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTaskGrid(PaginationState state) {
     return Padding(
       padding: AppPaddings.gH16,
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1600),
-          child: MasonryGridView.count(
-            crossAxisCount:
-                _calculateCrossAxisCount(MediaQuery.of(context).size.width),
-            mainAxisSpacing: 16,
-            crossAxisSpacing: 16,
-            itemCount: tasks.length,
-            itemBuilder: (context, index) {
-              final task = tasks[index];
-              return TaskCard(
-                task: task,
-                onTap: () => context.goNamed(
-                  'task-details',
-                  pathParameters: {'taskId': task.id},
+          child: CustomScrollView(
+            controller: _scrollController,
+            slivers: [
+              SliverMasonryGrid(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    if (index == state.tasks.length) {
+                      return _buildLoadMoreCard();
+                    }
+                    final task = state.tasks[index];
+                    return TaskCard(
+                      task: task,
+                      onTap: () => context.goNamed(
+                        'task-details',
+                        pathParameters: {'taskId': task.id},
+                      ),
+                    );
+                  },
+                  childCount: state.hasMore
+                      ? state.tasks.length + 1
+                      : state.tasks.length,
                 ),
-              );
-            },
+                gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: _calculateCrossAxisCount(
+                      MediaQuery.of(context).size.width),
+                ),
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+              ),
+              const SliverPadding(
+                padding: AppPaddings.gB80,
+              ),
+            ],
           ),
         ),
       ),
@@ -134,8 +209,8 @@ class DashboardPage extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final tasksAsyncValue = ref.watch(getTasksProvider);
+  Widget build(BuildContext context) {
+    final state = ref.watch(paginatedTasksProvider);
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
@@ -145,24 +220,21 @@ class DashboardPage extends ConsumerWidget {
         actions: [
           CustomIconButton(
             toolTip: AppStrings.logout,
-            onPressed: () => _showLogoutConfirmation(context, ref),
+            onPressed: _showLogoutConfirmation,
             icon: Icons.logout,
           )
         ],
       ),
       body: SafeArea(
         child: RefreshIndicator(
-          onRefresh: () async => ref.refresh(getTasksProvider),
-          child: tasksAsyncValue.when(
-            data: (tasks) {
-              if (tasks.isEmpty) {
-                return _buildEmptyState(context);
-              }
-              return _buildTaskGrid(tasks, context);
-            },
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (error, _) => _buildErrorState(error, ref),
-          ),
+          onRefresh: () async {
+            await ref.read(paginatedTasksProvider.notifier).refresh();
+          },
+          child: state.error != null
+              ? _buildErrorState(state.error!)
+              : state.tasks.isEmpty && !state.isLoading
+                  ? _buildEmptyState()
+                  : _buildTaskGrid(state),
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(

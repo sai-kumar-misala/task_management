@@ -5,6 +5,7 @@ class TaskModel {
   final String description;
   final DateTime dueDate;
   final String status;
+  final DateTime createdAt;
 
   TaskModel({
     required this.id,
@@ -13,7 +14,8 @@ class TaskModel {
     required this.description,
     required this.dueDate,
     required this.status,
-  });
+    DateTime? createdAt,
+  }) : createdAt = createdAt ?? DateTime.now();
 
   Map<String, dynamic> toMap() {
     return {
@@ -23,6 +25,7 @@ class TaskModel {
       'description': description,
       'dueDate': dueDate.toIso8601String(),
       'status': status,
+      'createdAt': createdAt.toIso8601String(),
     };
   }
 
@@ -34,6 +37,7 @@ class TaskModel {
       description: map['description'],
       dueDate: DateTime.parse(map['dueDate']),
       status: map['status'],
+      createdAt: DateTime.parse(map['createdAt']),
     );
   }
 }

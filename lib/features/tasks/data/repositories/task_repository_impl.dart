@@ -30,4 +30,9 @@ class TasksRepositoryImpl implements TasksRepository {
   Future<void> deleteTask(String taskId) {
     return remoteDataSource.deleteTask(taskId);
   }
+
+  @override
+  Future<List<TaskModel>> getPaginatedTasks(int limit, String? lastDocumentId) {
+    return remoteDataSource.getPaginatedTasks(limit, lastDocumentId);
+  }
 }

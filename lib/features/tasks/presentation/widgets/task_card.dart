@@ -31,9 +31,11 @@ class TaskCard extends ConsumerWidget {
               child: const Text(AppStrings.cancel),
             ),
             FilledButton(
-              onPressed: () {
-                ref.read(deleteTaskProvider)(task.id);
+              onPressed: () async {
+                await ref.read(deleteTaskProvider.notifier).deleteTask(task.id);
+                // ignore: use_build_context_synchronously
                 Navigator.of(context).pop();
+                // ignore: use_build_context_synchronously
                 CustomSnackBar.show(context, AppStrings.deleteSuccessful);
               },
               style: ButtonStyle(
