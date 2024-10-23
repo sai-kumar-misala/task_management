@@ -32,7 +32,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
       try {
-        await ref.read(authProvider.notifier).signIn(
+        await ref.read(authNotifierProvider.notifier).signIn(
               _emailController.text,
               _passwordController.text,
             );

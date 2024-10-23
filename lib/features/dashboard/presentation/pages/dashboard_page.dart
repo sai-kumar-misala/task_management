@@ -29,7 +29,7 @@ class DashboardPage extends ConsumerWidget {
 
     if (willLogout == true) {
       if (context.mounted) {
-        await ref.read(authProvider.notifier).signOut();
+        await ref.read(authNotifierProvider.notifier).signOut();
         if (context.mounted) {
           context.goNamed('login');
         }

@@ -1,39 +1,59 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../../session/providers/session_provider.dart';
 import '../../data/data_sources/auth_remote_data_source.dart';
 import '../../data/model/user_model.dart';
 import '../../data/repositories/auth_repository_impl.dart';
-import '../../domain/repositories/auth_repository.dart';
 import '../../domain/use_cases/login_use_case.dart';
 
-final authProvider = StateNotifierProvider<AuthNotifier, UserModel?>((ref) {
-  return AuthNotifier(ref);
+final authStateProvider = StreamProvider<User?>((ref) {
+  return FirebaseAuth.instance.authStateChanges();
+});
+
+final userModelProvider = StateProvider<UserModel?>((ref) {
+  final authState = ref.watch(authStateProvider);
+
+  return authState.when(
+    data: (user) {
+      if (user != null) {
+        return UserModel(
+          uid: user.uid,
+          email: user.email!,
+          lastActive: DateTime.now(),
+        );
+      }
+      return null;
+    },
+    loading: () => null,
+    error: (_, __) => null,
+  );
 });
 
 class AuthNotifier extends StateNotifier<UserModel?> {
   final Ref _ref;
-  late FirebaseAuth _auth;
+  final FirebaseAuth _auth;
 
-  AuthNotifier(this._ref) : super(null) {
-    _auth = FirebaseAuth.instance;
-
-    _auth.authStateChanges().listen((User? user) {
-      if (user != null) {
-        state = UserModel(
-          uid: user.uid,
-          email: user.email!,
-        );
+  AuthNotifier(this._ref)
+      : _auth = FirebaseAuth.instance,
+        super(null) {
+    _ref.listen(userModelProvider, (previous, next) {
+      state = next;
+      if (next != null) {
+        Future.microtask(() {
+          _ref.read(sessionProvider).updateLastActive();
+          _ref.read(sessionProvider).persistSession(next);
+        });
       } else {
-        state = null;
+        Future.microtask(() {
+          _ref.read(sessionProvider).clearSession();
+        });
       }
     });
   }
 
   Future<void> signIn(String email, String password) async {
     try {
-      UserModel? user =
-          await _ref.read(loginUseCaseProvider).call(email, password);
-      state = user;
+      await _ref.read(loginUseCaseProvider).call(email, password);
     } catch (error) {
       throw Exception('Login failed: ${error.toString()}');
     }
@@ -41,9 +61,7 @@ class AuthNotifier extends StateNotifier<UserModel?> {
 
   Future<void> signUp(String email, String password) async {
     try {
-      UserModel? user =
-          await _ref.read(authRepositoryProvider).signUp(email, password);
-      state = user;
+      await _ref.read(authRepositoryProvider).signUp(email, password);
     } catch (error) {
       throw Exception('Sign up failed: ${error.toString()}');
     }
@@ -51,14 +69,18 @@ class AuthNotifier extends StateNotifier<UserModel?> {
 
   Future<void> signOut() async {
     await _ref.read(authRepositoryProvider).signOut();
-    state = null;
   }
 }
 
-final loginUseCaseProvider = Provider<LoginUseCase>((ref) {
+final authNotifierProvider =
+    StateNotifierProvider<AuthNotifier, UserModel?>((ref) {
+  return AuthNotifier(ref);
+});
+
+final loginUseCaseProvider = Provider((ref) {
   return LoginUseCase(repository: ref.read(authRepositoryProvider));
 });
 
-final authRepositoryProvider = Provider<AuthRepository>((ref) {
+final authRepositoryProvider = Provider((ref) {
   return AuthRepositoryImpl(remoteDataSource: AuthRemoteDataSource());
 });

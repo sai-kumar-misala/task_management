@@ -30,7 +30,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
   Future<void> _signUp() async {
     if (_formKey.currentState!.validate()) {
       try {
-        await ref.read(authProvider.notifier).signUp(
+        await ref.read(authNotifierProvider.notifier).signUp(
               _emailController.text,
               _passwordController.text,
             );

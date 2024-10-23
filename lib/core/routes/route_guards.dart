@@ -2,27 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class RouteGuards {
-  static final _auth = FirebaseAuth.instance;
+  static Stream<User?> authStateChanges() {
+    return FirebaseAuth.instance.authStateChanges();
+  }
 
-  static String? authGuard(BuildContext context, String currentPath) {
-    final user = _auth.currentUser;
-    final isAuth = user != null;
+  static String? authGuard(BuildContext context, String path) {
+    final user = FirebaseAuth.instance.currentUser;
+    final bool isAuthenticated = user != null;
 
-    const authenticatedRoutes = ['/dashboard'];
-    const unauthenticatedRoutes = ['/', '/signup'];
+    final publicRoutes = ['/', '/signup'];
 
-    if (isAuth && unauthenticatedRoutes.contains(currentPath)) {
-      return '/dashboard';
+    final protectedRoutes = ['/dashboard'];
+
+    final isPublicRoute = publicRoutes.contains(path);
+    final isProtectedRoute = protectedRoutes.contains(path);
+
+    if (!isAuthenticated && isProtectedRoute) {
+      return '/';
     }
 
-    if (!isAuth && authenticatedRoutes.contains(currentPath)) {
-      return '/';
+    if (isAuthenticated && isPublicRoute && path != '/signup') {
+      return '/dashboard';
     }
 
     return null;
   }
-
-  static bool isAuthenticated() => _auth.currentUser != null;
-
-  static Stream<User?> authStateChanges() => _auth.authStateChanges();
 }
