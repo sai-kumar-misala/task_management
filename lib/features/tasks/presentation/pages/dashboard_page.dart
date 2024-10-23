@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:task_management/core/constants/app_paddings.dart';
-import 'package:task_management/shared/widgets/spacings.dart';
+
+import '../../../../core/constants/app_paddings.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../../../../shared/widgets/custom_icon_button.dart';
+import '../../../../shared/widgets/custom_snackbar.dart';
+import '../../../../shared/widgets/spacings.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../providers/task_providers.dart';
 import '../widgets/task_card.dart';
@@ -40,9 +43,7 @@ class DashboardPage extends ConsumerWidget {
         }
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${AppStrings.taskCreationError} $e')),
-          );
+          CustomSnackBar.show(context, '${AppStrings.taskCreationError} $e');
         }
       }
     }
@@ -55,18 +56,15 @@ class DashboardPage extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.task_alt,
-                size: 64, color: Theme.of(context).colorScheme.secondary),
+            Icon(
+              Icons.task_alt,
+              size: 64,
+              color: Theme.of(context).colorScheme.secondary,
+            ),
             const Spacing.vertical(16),
             const Text(
               AppStrings.noTasksAvailable,
               style: TextStyle(fontSize: 18),
-            ),
-            const Spacing.vertical(8),
-            ElevatedButton.icon(
-              onPressed: () => context.goNamed('create-task'),
-              icon: const Icon(Icons.add),
-              label: const Text(AppStrings.createTask),
             ),
           ],
         ),
@@ -145,11 +143,11 @@ class DashboardPage extends ConsumerWidget {
         title: const Text(AppStrings.dashboard),
         centerTitle: screenWidth > 600,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: AppStrings.logout,
+          CustomIconButton(
+            toolTip: AppStrings.logout,
             onPressed: () => _showLogoutConfirmation(context, ref),
-          ),
+            icon: Icons.logout,
+          )
         ],
       ),
       body: SafeArea(

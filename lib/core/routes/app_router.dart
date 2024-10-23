@@ -5,6 +5,7 @@ import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/sign_up_page.dart';
 import '../../features/tasks/presentation/pages/create_task_page.dart';
 import '../../features/tasks/presentation/pages/dashboard_page.dart';
+import '../../features/tasks/presentation/pages/edit_task_page.dart';
 import '../../features/tasks/presentation/pages/task_details_page.dart';
 import '../../shared/pages/page_not_found.dart';
 import 'route_guards.dart';
@@ -42,6 +43,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final taskId = state.pathParameters['taskId']!;
           return TaskDetailsPage(taskId: taskId);
+        },
+      ),
+      GoRoute(
+        path: '/edit-task/:taskId',
+        name: 'edit-task',
+        builder: (context, state) {
+          final taskId = state.pathParameters['taskId']!;
+          return EditTaskPage(taskId: taskId);
         },
       ),
     ],

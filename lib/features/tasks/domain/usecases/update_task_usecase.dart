@@ -1,12 +1,12 @@
 import '../../data/models/task_model.dart';
 import '../repositories/task_repository.dart';
 
-class CreateTaskUseCase {
+class UpdateTaskUsecase {
   final TasksRepository repository;
 
-  CreateTaskUseCase(this.repository);
+  UpdateTaskUsecase(this.repository);
 
   Future<void> call(TaskModel task) async {
-    return await repository.createTask(task);
+    return await repository.updateTask(task);
   }
 }

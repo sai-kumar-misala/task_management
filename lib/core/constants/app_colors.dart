@@ -5,6 +5,7 @@ class AppColors {
       ColorScheme.fromSeed(seedColor: Colors.deepPurple);
 
   static const primaryColor = Color(0xfff8f8f8);
+  static const blackColor = Colors.black;
   static const errorColor = Colors.red;
   static const pendingColor = Colors.orange;
   static const inProgressColor = Colors.blue;

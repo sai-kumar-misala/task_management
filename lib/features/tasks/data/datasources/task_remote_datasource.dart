@@ -58,4 +58,37 @@ class TasksRemoteDataSource {
       return TaskModel.fromMap(data);
     });
   }
+
+  Future<void> updateTask(TaskModel task) async {
+    if (currentUserId == null) {
+      throw Exception(AppStrings.userNotAuthenticated);
+    }
+
+    final taskDoc =
+        await _firestore.collection(tasksCollection).doc(task.id).get();
+
+    if (taskDoc.exists && taskDoc.data()?['userId'] == currentUserId) {
+      await _firestore
+          .collection(tasksCollection)
+          .doc(task.id)
+          .update(task.toMap());
+    } else {
+      throw Exception(AppStrings.taskNotFound);
+    }
+  }
+
+  Future<void> deleteTask(String taskId) async {
+    if (currentUserId == null) {
+      throw Exception(AppStrings.userNotAuthenticated);
+    }
+
+    final taskDoc =
+        await _firestore.collection(tasksCollection).doc(taskId).get();
+
+    if (taskDoc.exists && taskDoc.data()?['userId'] == currentUserId) {
+      await _firestore.collection(tasksCollection).doc(taskId).delete();
+    } else {
+      throw Exception(AppStrings.taskNotFound);
+    }
+  }
 }

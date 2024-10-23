@@ -30,7 +30,7 @@ class TaskDetailsPage extends ConsumerWidget {
         data: (task) => _buildTaskDetails(context, task!),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(
-          child: Text('${AppStrings.errorLoadingTask} $error'),
+          child: Text('${AppStrings.errorLoadingTask}: $error'),
         ),
       ),
     );
@@ -41,14 +41,14 @@ class TaskDetailsPage extends ConsumerWidget {
       builder: (context, constraints) {
         final isWideScreen = constraints.maxWidth > 600;
         final contentPadding = isWideScreen ? 32.0 : 24.0;
-        final maxWidth = isWideScreen ? 800.0 : constraints.maxWidth * 0.95;
+        final maxWidth = isWideScreen ? 600.0 : constraints.maxWidth * 0.95;
 
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
               width: maxWidth,
-              constraints: const BoxConstraints(maxWidth: 800),
+              constraints: const BoxConstraints(maxWidth: 600),
               child: SingleChildScrollView(
                 padding: EdgeInsets.all(contentPadding),
                 child: Column(

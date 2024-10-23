@@ -28,14 +28,19 @@ class AppStrings {
   static const welcomeToDashboard = 'Welcome to the Dashboard!';
   static const noTasksAvailable = 'No tasks available';
   static const createTask = 'Create Task';
+  static const create = 'Create';
 
   // Page Not found page
   static const pageNotFound = '404 - Page Not Found';
   static const goToHome = 'Go to Home';
+  static const goBack = 'Go Back';
 
   // Create Task page
   static const title = 'Title';
+  static const titleAlert = 'Please enter a title';
   static const description = 'Description';
+  static const descriptionAlert = 'Please enter a description';
+
   static const dueDate = 'Due Date:';
   static const selectDueDate = 'Select Due Date';
   static const taskCreated = 'Task created successfully';
@@ -44,8 +49,24 @@ class AppStrings {
 
 // Create Task page
   static const taskDetails = 'Task Details';
-  static const errorLoadingTask = 'Error loading task:';
+  static const errorLoadingTask = 'Error loading task';
+
+// Edit Task page
+  static const edit = 'Edit';
+  static const editTask = 'Edit Task';
+  static const status = 'Status';
+  static const save = 'Save';
+  static const taskUpdateSuccessful = 'Task updated successfully';
+  static const errorUpdatingTask = 'Error updating task';
+
+  // Delete task
+
+  static const delete = 'Delete';
+  static const deleteTask = 'Delete Task';
+  static const deleteAlert = 'Are you sure you want to delete this task?';
+  static const deleteSuccessful = 'Task deleted successfully';
 
   // General
   static const userNotAuthenticated = 'User not authenticated';
+  static const taskNotFound = 'Task not found or unauthorized';
 }

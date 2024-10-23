@@ -1,10 +1,6 @@
+import '../../domain/repositories/task_repository.dart';
 import '../datasources/task_remote_datasource.dart';
 import '../models/task_model.dart';
-
-abstract class TasksRepository {
-  Future<void> createTask(TaskModel task);
-  Stream<List<TaskModel>> getTasks();
-}
 
 class TasksRepositoryImpl implements TasksRepository {
   final TasksRemoteDataSource remoteDataSource;
@@ -23,5 +19,15 @@ class TasksRepositoryImpl implements TasksRepository {
 
   Stream<TaskModel?> getTaskById(String taskId) {
     return remoteDataSource.getTaskById(taskId);
+  }
+
+  @override
+  Future<void> updateTask(TaskModel taskId) {
+    return remoteDataSource.updateTask(taskId);
+  }
+
+  @override
+  Future<void> deleteTask(String taskId) {
+    return remoteDataSource.deleteTask(taskId);
   }
 }
