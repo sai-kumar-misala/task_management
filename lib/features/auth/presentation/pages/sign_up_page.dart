@@ -34,7 +34,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
               _emailController.text,
               _passwordController.text,
             );
-        context.go('/dashboard');
+        context.goNamed('dashboard');
       } catch (e) {
         setState(() {
           _errorMessage = e.toString();
@@ -52,7 +52,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
       bottomSection: AuthBottomText(
         message: AppStrings.alreadyHaveAccount,
         buttonText: AppStrings.signIn,
-        onPressed: () => context.go('/'),
+        onPressed: () => context.goNamed('login'),
       ),
       children: [
         AuthForm(

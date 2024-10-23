@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../data/data_sources/auth_remote_data_source.dart';
 import '../../data/model/user_model.dart';
 import '../../data/repositories/auth_repository_impl.dart';
@@ -12,8 +12,22 @@ final authProvider = StateNotifierProvider<AuthNotifier, UserModel?>((ref) {
 
 class AuthNotifier extends StateNotifier<UserModel?> {
   final Ref _ref;
+  late FirebaseAuth _auth;
 
-  AuthNotifier(this._ref) : super(null);
+  AuthNotifier(this._ref) : super(null) {
+    _auth = FirebaseAuth.instance;
+
+    _auth.authStateChanges().listen((User? user) {
+      if (user != null) {
+        state = UserModel(
+          uid: user.uid,
+          email: user.email!,
+        );
+      } else {
+        state = null;
+      }
+    });
+  }
 
   Future<void> signIn(String email, String password) async {
     try {

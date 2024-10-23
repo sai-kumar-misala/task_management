@@ -33,4 +33,8 @@ class AuthRemoteDataSource {
   Future<void> signOut() async {
     await _firebaseAuth.signOut();
   }
+
+  Future<void> setPersistence() async {
+    await _firebaseAuth.setPersistence(Persistence.LOCAL);
+  }
 }

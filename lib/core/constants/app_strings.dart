@@ -18,4 +18,16 @@ class AppStrings {
   static const signUpText = 'Sign Up to get started';
   static const signUp = 'Sign Up';
   static const alreadyHaveAccount = 'Already have an account?';
+
+  // Dashboard page
+  static const confirmLogout = 'Confirm Logout';
+  static const logoutText = 'Are you sure you want to logout?';
+  static const cancel = 'Cancel';
+  static const logout = 'Logout';
+  static const dashboard = 'Dashboard';
+  static const welcomeToDashboard = 'Welcome to the Dashboard!';
+
+  // Page Not found page
+  static const pageNotFound = '404 - Page Not Found';
+  static const goToHome = 'Go to Home';
 }

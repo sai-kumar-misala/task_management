@@ -54,7 +54,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       bottomSection: AuthBottomText(
         message: AppStrings.notAUser,
         buttonText: AppStrings.signUp,
-        onPressed: () => context.go('/signup'),
+        onPressed: () => context.goNamed('signup'),
       ),
       children: [
         AuthForm(
